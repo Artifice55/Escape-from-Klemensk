@@ -125,10 +125,51 @@ class Bullet(pygame.sprite.Sprite):
         self.bullet_movement()
 
 
-player = Player()
+class Enemy(pygame.sprite.Sprite):
+    def __init__(self, position):
+        super().__init__(enemy_group, all_sprites_group)
+        self.image = pygame.image.load("Zombie.png").convert_alpha()
+        self.image = pygame.transform.rotozoom(self.image, 0, .25)
+
+        self.rect = self.image.get_rect()
+        self.rect.center = position
+
+        self.direction = pygame.math.Vector2()
+        self.velocity = pygame.math.Vector2()
+        self.speed = 2
+
+        self.position = pygame.math.Vector2(position)
+
+    def hunt_player(self):
+        player_vector = pygame.math.Vector2(player.hitbox_rect.center)
+        enemy_vector = pygame.math.Vector2(self.rect.center)
+        distance = self.get_vector_distance(player_vector, enemy_vector)
+
+        if distance > 0:
+            self.direction = (player_vector - enemy_vector).normalize()
+        else:
+            self.direction = pygame.math.Vector2()
+        
+        self.velocity = self.direction * self.speed
+        self.position += self.velocity
+
+        self.rect.centerx = self.position.x
+        self.rect.centery = self.position.y
+
+    def get_vector_distance(self, vector_1, vector_2):
+        return (vector_1 - vector_2).magnitude()
+    
+    def update(self):
+        self.hunt_player()
+
 
 all_sprites_group = pygame.sprite.Group()
 bullet_group = pygame.sprite.Group()
+enemy_group = pygame.sprite.Group()
+
+player = Player()
+zombie = Enemy((800, 100))
+
 
 all_sprites_group.add(player)
 
