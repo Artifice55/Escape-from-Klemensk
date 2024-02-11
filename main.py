@@ -368,28 +368,29 @@ while run:
 
         player.user_input()
 
-    screen.blit(background, (0,0))
+    SCREEN.blit(background, (0,0))
    
     if player_alive:
-        all_sprites_group.draw(screen)
+        all_sprites_group.draw(SCREEN)
     else: 
         font = pygame.font.SysFont(None, 100)
         death_text = font.render("You have died!", True, RED)
-        screen.blit(death_text, (WIDTH // 2 - death_text.get_width() // 2, HEIGHT // 2 - death_text.get_width() // 2))
+        SCREEN.blit(death_text, (WIDTH // 2 - death_text.get_width() // 2, HEIGHT // 2 - death_text.get_width() // 2))
     
-    if len(enemy_group) == 0 and not all_enemies_defeated:
-        victory_font = pygame.font.SysFont(None, 100)
-        victory_text = victory_font.render("You have survived!", True, GREEN)
-        screen.blit(victory_text, (WIDTH // 2 - victory_text.get_width() // 2, HEIGHT // 2 - victory_text.get_width() // 2))
-
-
-    all_sprites_group.update()
+    if len(enemy_group) == 0:
+        all_enemies_defeated = True
 
     if player.health <= 0:
         player_alive = False
         player.velocity_x = 0
         player.velocity_y = 0
 
+    if all_enemies_defeated and player_alive:
+        victory_font = pygame.font.SysFont(None, 100)
+        victory_text = victory_font.render("You have survived!", True, GREEN)
+        SCREEN.blit(victory_text, (WIDTH // 2 - victory_text.get_width() // 2, HEIGHT // 2 - victory_text.get_width() // 2))
 
+    
+    all_sprites_group.update()
     pygame.display.update()
     clock.tick(FPS)
