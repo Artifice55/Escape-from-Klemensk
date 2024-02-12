@@ -20,21 +20,14 @@ To run Escape From Klemensk, follow these steps:
 
 Install Python: Make sure you have Python installed on your computer. You can download Python from python.org.
 
-Clone the Repository: Clone or download the Escape From Klemensk repository from GitHub.
-
 Navigate to the Directory: Using your command line interface, navigate to the directory where you've cloned or downloaded the game files.
 
-Run the Game: Run the game by executing the main Python script. Use the following command:
-
-css
-Copy code
-python main.py
-Enjoy: Immerse yourself in the heart-pounding action of Escape From Klemensk and see if you have what it takes to survive!
+Enjoy: Immerse yourself in the heart-pounding action of Escape From Klemensk and see if you have what it takes to survive
 
 Credits
 Escape From Klemensk was created by Anton Khassanov and Joseph Lee as a project for Flatiron school phase 3 project. Special thanks to the Python community for their invaluable resources and support.
 
 Feedback and Support
-We hope you enjoy playing Escape From Klemensk! If you encounter any issues, have feedback, or just want to say hello, feel free to reach out to [Your Contact Information].
+We hope you enjoy playing Escape From Klemensk! If you encounter any issues, have feedback, or just want to say hello, feel free to reach out to make a pull request.
 
 Now, gear up, steel your nerves, and prepare to face the horrors that await you in the streets of Klemensk. Good luck, survivor!
