@@ -14,8 +14,8 @@ background = pygame.transform.scale(pygame.image.load("street_background.png").c
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.transform.rotozoom(pygame.image.load("0.png").convert_alpha(), 0, 0.35)
         self.pos = pygame.math.Vector2(PLAYER_START_X, PLAYER_START_Y)
+        self.image = pygame.transform.rotozoom(pygame.image.load("0.png").convert_alpha(), 0, 0.35)
         self.base_player_image = self.image
         self.hitbox_rect = self.base_player_image.get_rect(center = self.pos)
         self.rect = self.hitbox_rect.copy()
@@ -23,7 +23,6 @@ class Player(pygame.sprite.Sprite):
         self.shoot = False
         self.shoot_cooldown = 0 
         self.gun_barrel_offset = pygame.math.Vector2(GUN_OFFSET_X, GUN_OFFSET_Y)
-        
 
     def player_rotation(self):
         self.mouse_coordinate = pygame.mouse.get_pos()
@@ -70,7 +69,6 @@ class Player(pygame.sprite.Sprite):
         self.pos += pygame.math.Vector2(self.velocity_x, self.velocity_y)
         self.hitbox_rect.center = self.pos
         self.rect.center = self.hitbox_rect.center
-        
 
     def update(self):
         self.user_input()
