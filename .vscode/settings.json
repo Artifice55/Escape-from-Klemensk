@@ -1,6 +1,10 @@
 {
     "cSpell.words": [
         "blit",
+        "centerx",
+        "centery",
+        "cooldown",
+        "hitbox",
         "Klemensk",
         "pygame",
         "rotozoom"
