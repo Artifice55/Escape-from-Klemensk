@@ -47,6 +47,16 @@ class Player(pygame.sprite.Sprite):
             self.velocity_x = self.speed
         if keys[pygame.K_a]:
             self.velocity_x = -self.speed
+        if keys[pygame.K_LEFT]:
+            self.velocity_x = -self.speed
+        if keys[pygame.K_RIGHT]:
+            self.velocity_x = self.speed
+        if keys[pygame.K_UP]:
+            self.velocity_y = -self.speed
+        if keys[pygame.K_DOWN]:
+            self.velocity_y = self.speed
+
+
 
         if self.velocity_x != 0 and self.velocity_y != 0:
             self.velocity_x /= math.sqrt(2)
