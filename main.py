@@ -11,13 +11,13 @@ screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Escape from Klemensk")
 clock = pygame.time.Clock()
 
-background = pygame.transform.scale(pygame.image.load("street_background.png").convert(), (WIDTH, HEIGHT))
+background = pygame.transform.scale(pygame.image.load("assets/street_background.png").convert(), (WIDTH, HEIGHT))
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.pos = pygame.math.Vector2(PLAYER_START_X, PLAYER_START_Y)
-        self.image = pygame.transform.rotozoom(pygame.image.load("0.png").convert_alpha(), 0, 0.35)
+        self.image = pygame.transform.rotozoom(pygame.image.load("assets/0.png").convert_alpha(), 0, 0.35)
         self.base_player_image = self.image
         self.hitbox_rect = self.base_player_image.get_rect(center = self.pos)
         self.rect = self.hitbox_rect.copy()
@@ -123,7 +123,7 @@ class Bullet(pygame.sprite.Sprite):
     
     def __init__(self, x, y, angle): 
         super().__init__()
-        self.image = pygame.image.load("1.png").convert_alpha()
+        self.image = pygame.image.load("assets/1.png").convert_alpha()
         self.image = pygame.transform.rotozoom(self.image, 0, BULLET_SCALE)
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
@@ -156,7 +156,7 @@ class Bullet(pygame.sprite.Sprite):
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, position):
         super().__init__(enemy_group, all_sprites_group)
-        self.image = pygame.image.load("Zombie.png").convert_alpha()
+        self.image = pygame.image.load("assets/Zombie.png").convert_alpha()
         self.image = pygame.transform.rotozoom(self.image, 0, .25)
 
         self.rect = self.image.get_rect()
