@@ -81,6 +81,9 @@ class Player(pygame.sprite.Sprite):
              self.bullet = Bullet(spawn_bullet_pos[0], spawn_bullet_pos[1], self.angle)
              bullet_group.add(self.bullet)
              all_sprites_group.add(self.bullet)
+        
+         if self.bullet.rect.left > WIDTH or self.bullet.rect.right < 0 or self.bullet.rect.top > HEIGHT or self.bullet.rect.bottom < 0:
+            self.bullet.kill()
 
     def move(self):
         self.pos += pygame.math.Vector2(self.velocity_x, self.velocity_y)
@@ -150,12 +153,77 @@ class Bullet(pygame.sprite.Sprite):
         self.bullet_movement()
 
 
-player = Player()
+class Enemy(pygame.sprite.Sprite):
+    def __init__(self, position):
+        super().__init__(enemy_group, all_sprites_group)
+        self.image = pygame.image.load("Zombie.png").convert_alpha()
+        self.image = pygame.transform.rotozoom(self.image, 0, .25)
+
+        self.rect = self.image.get_rect()
+        self.rect.center = position
+
+        self.direction = pygame.math.Vector2()
+        self.velocity = pygame.math.Vector2()
+        self.speed = 2
+
+        self.position = pygame.math.Vector2(position)
+
+        self.health = 100
+        self.max_health = self.health
+
+    def hunt_player(self):
+        player_vector = pygame.math.Vector2(player.hitbox_rect.center)
+        enemy_vector = pygame.math.Vector2(self.rect.center)
+        distance = self.get_vector_distance(player_vector, enemy_vector)
+
+        if distance > 0:
+            self.direction = (player_vector - enemy_vector).normalize()
+        else:
+            self.direction = pygame.math.Vector2()
+        
+        self.velocity = self.direction * self.speed
+        self.position += self.velocity
+
+        self.rect.centerx = self.position.x
+        self.rect.centery = self.position.y
+
+        if self.rect.colliderect(player.rect):
+            player.health -= 10
+
+    def get_vector_distance(self, vector_1, vector_2):
+        return (vector_1 - vector_2).magnitude()
+    
+    def draw_health_bar(self):
+        BAR_LENGTH = 50
+        BAR_HEIGHT = 5
+        fill = (self.health / self.max_health) * BAR_LENGTH
+        bar_x = self.rect.centerx - BAR_LENGTH // 2
+        outline_rect = pygame.Rect(bar_x, self.rect.y - 10, BAR_LENGTH, BAR_HEIGHT)
+        fill_rect = pygame.Rect(bar_x, self.rect.y - 10, fill, BAR_HEIGHT)
+        pygame.draw.rect(screen, RED , outline_rect, 2)
+        pygame.draw.rect(screen, GREEN , fill_rect)
+    
+    def update(self):
+        self.hunt_player()
+        self.draw_health_bar()
+
+        if self.health <=0:
+            self.kill()
+    
+
+
+
+
 
 all_sprites_group = pygame.sprite.Group()
 bullet_group = pygame.sprite.Group()
+enemy_group = pygame.sprite.Group()
 
-all_sprites_group.add(player)
+player = Player()
+zombie = Enemy((800, 100))
+
+
+all_sprites_group.add(player, zombie)
 
 while True:
     keys = pygame.key.get_pressed()
@@ -163,6 +231,12 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             exit()
+
+    collisions = pygame.sprite.groupcollide(bullet_group, enemy_group, True, False)
+    for bullet, enemies_hit in collisions.items():
+        for enemy in enemies_hit:
+            enemy.health -= 10
+
 
     screen.blit(background, (0,0))
    
