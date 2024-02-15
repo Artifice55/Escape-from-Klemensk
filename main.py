@@ -142,7 +142,8 @@ class Player(pygame.sprite.Sprite):
         self.shoot_cooldown = 0 
         self.gun_barrel_offset = pygame.math.Vector2(GUN_OFFSET_X, GUN_OFFSET_Y)
         self.rect = self.image.get_rect(center = (400, 400))
-        self.current_health = 200
+        self.health = 500
+        self.current_health = 500
         self.maximum_health = 1000
         self.health_bar_length = 400
         self.health_ratio = self.maximum_health / self.health_bar_length
@@ -338,6 +339,9 @@ zombie = Enemy((800, 100))
 
 all_sprites_group.add(player, zombie)
 
+player_alive = True
+all_enemies_defeated= False
+
 run = True
 while run:
     # Start with main menu, and if PLAY is selected, break out of main menu.
@@ -350,15 +354,42 @@ while run:
                 pygame.quit()
                 exit()
 
-    collisions = pygame.sprite.groupcollide(bullet_group, enemy_group, True, False)
-    for bullet, enemies_hit in collisions.items():
-        for enemy in enemies_hit:
-            enemy.health -= 10
+    if player_alive:    
+        collisions = pygame.sprite.groupcollide(bullet_group, enemy_group, True, False)
+        for bullet, enemies_hit in collisions.items():
+            for enemy in enemies_hit:
+                enemy.health -= 10
+                if enemy.health <=0:
+                    enemy.kill()
+    
+        player_enemy_collisions = pygame.sprite.spritecollide(player, enemy_group, False)
+        for enemy in player_enemy_collisions:
+            player.get_damage(10)
 
-    SCREEN.blit(background, (0,0))
+        player.user_input()
 
-    all_sprites_group.draw(SCREEN)
+    screen.blit(background, (0,0))
+   
+    if player_alive:
+        all_sprites_group.draw(screen)
+    else: 
+        font = pygame.font.SysFont(None, 100)
+        death_text = font.render("You have died!", True, RED)
+        screen.blit(death_text, (WIDTH // 2 - death_text.get_width() // 2, HEIGHT // 2 - death_text.get_width() // 2))
+    
+    if len(enemy_group) == 0 and not all_enemies_defeated:
+        victory_font = pygame.font.SysFont(None, 100)
+        victory_text = victory_font.render("You have survived!", True, GREEN)
+        screen.blit(victory_text, (WIDTH // 2 - victory_text.get_width() // 2, HEIGHT // 2 - victory_text.get_width() // 2))
+
+
     all_sprites_group.update()
+
+    if player.health <= 0:
+        player_alive = False
+        player.velocity_x = 0
+        player.velocity_y = 0
+
 
     pygame.display.update()
     clock.tick(FPS)
