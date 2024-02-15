@@ -254,14 +254,14 @@ while True:
 
     screen.blit(background, (0,0))
    
-    if player_alive and len(enemy_group) > 0:
+    if player_alive:
         all_sprites_group.draw(screen)
-    elif not player_alive: 
+    else: 
         font = pygame.font.SysFont(None, 100)
         death_text = font.render("You have died!", True, RED)
         screen.blit(death_text, (WIDTH // 2 - death_text.get_width() // 2, HEIGHT // 2 - death_text.get_width() // 2))
-
-    elif len(enemy_group) == 0 and not all_enemies_defeated:
+    
+    if len(enemy_group) == 0 and not all_enemies_defeated:
         victory_font = pygame.font.SysFont(None, 100)
         victory_text = victory_font.render("You have survived!", True, GREEN)
         screen.blit(victory_text, (WIDTH // 2 - victory_text.get_width() // 2, HEIGHT // 2 - victory_text.get_width() // 2))
