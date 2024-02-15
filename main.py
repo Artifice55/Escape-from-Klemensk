@@ -1,10 +1,12 @@
 import pygame
+# from pygame import mixer
 from sys import exit
 import math
 from settings import * 
 
-pygame.init()
 
+pygame.init()
+  
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Escape from Klemensk")
 clock = pygame.time.Clock()
@@ -23,6 +25,11 @@ class Player(pygame.sprite.Sprite):
         self.shoot = False
         self.shoot_cooldown = 0 
         self.gun_barrel_offset = pygame.math.Vector2(GUN_OFFSET_X, GUN_OFFSET_Y)
+        self.rect = self.image.get_rect(center = (400, 400))
+        self.current_health = 200
+        self.maximum_health = 1000
+        self.health_bar_length = 400
+        self.health_ratio = self.maximum_health / self.health_bar_length
 
     def player_rotation(self):
         self.mouse_coordinate = pygame.mouse.get_pos()
@@ -87,9 +94,27 @@ class Player(pygame.sprite.Sprite):
         self.user_input()
         self.move()
         self.player_rotation()
-            
+        self.basic_health()    
+        
         if self.shoot_cooldown > 0:
             self.shoot_cooldown -= 1
+        
+
+    def get_damage(self, amount):
+        if self.current_health > 0:
+            self.current_health -= amount
+        if self.current_health <= 0:
+            self.current_health = 0 
+    
+    def get_health(self, amount):
+        if self.current_health < self.maximum_health:
+            self.current_health += amount
+        if self.current_health >= self.maximum_health:
+            self.current_health = self.maximum_health
+
+    def basic_health(self):
+        pygame.draw.rect(screen, (255,0,0),(10,10,self.current_health/self.health_ratio,25))
+        pygame.draw.rect(screen, (255,255,255),(10,10,self.health_bar_length,25),4)
 
 
 class Bullet(pygame.sprite.Sprite): 
@@ -200,7 +225,6 @@ zombie = Enemy((800, 100))
 
 all_sprites_group.add(player, zombie)
 
-
 while True:
     keys = pygame.key.get_pressed()
     for event in pygame.event.get():
@@ -212,6 +236,7 @@ while True:
     for bullet, enemies_hit in collisions.items():
         for enemy in enemies_hit:
             enemy.health -= 10
+
 
     screen.blit(background, (0,0))
    
