@@ -1,17 +1,133 @@
-import pygame
-# from pygame import mixer
+import pygame, sys
 from sys import exit
 import math
 from settings import * 
 
-
 pygame.init()
   
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
+SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Escape from Klemensk")
 clock = pygame.time.Clock()
 
+start_game = False
+
+BG = pygame.image.load("assets/Background.png")
+
 background = pygame.transform.scale(pygame.image.load("assets/street_background.png").convert(), (WIDTH, HEIGHT))
+
+def get_font(size): 
+    return pygame.font.Font("assets/font.ttf", size)
+
+def play():
+     while True:
+         PLAY_MOUSE_POS = pygame.mouse.get_pos()
+         SCREEN.fill("black")
+         PLAY_TEXT = get_font(45).render("This is the PLAY screen.", True, "White")
+         PLAY_RECT = PLAY_TEXT.get_rect(center=(640, 260))
+         SCREEN.blit(PLAY_TEXT, PLAY_RECT)
+         PLAY_BACK = Button(image=None, pos=(640, 460), 
+                             text_input="BACK", font=get_font(75), base_color="White", hovering_color="Green")
+         PLAY_BACK.changeColor(PLAY_MOUSE_POS)
+         PLAY_BACK.update(SCREEN)
+         for event in pygame.event.get():
+             if event.type == pygame.QUIT:
+                 pygame.quit()
+                 sys.exit()
+             if event.type == pygame.MOUSEBUTTONDOWN:
+                 if PLAY_BACK.checkForInput(PLAY_MOUSE_POS):
+                     main_menu()
+         pygame.display.update()
+
+def options():
+    while True:
+        OPTIONS_MOUSE_POS = pygame.mouse.get_pos()
+        SCREEN.fill("white")
+        OPTIONS_TEXT = get_font(20).render("This is the OPTIONS screen (under construction).", True, "Black")
+        OPTIONS_RECT = OPTIONS_TEXT.get_rect(center=(640, 260))
+        SCREEN.blit(OPTIONS_TEXT, OPTIONS_RECT)
+        OPTIONS_BACK = Button(image=None, pos=(640, 460), 
+                            text_input="BACK", font=get_font(75), base_color="Black", hovering_color="Green")
+        OPTIONS_BACK.changeColor(OPTIONS_MOUSE_POS)
+        OPTIONS_BACK.update(SCREEN)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if OPTIONS_BACK.checkForInput(OPTIONS_MOUSE_POS):
+                    main_menu()
+        pygame.display.update()
+def main_menu():
+    global start_game
+    while not start_game:
+        SCREEN.blit(BG, (0, 0))
+
+        MENU_MOUSE_POS = pygame.mouse.get_pos()
+
+        MENU_TEXT = get_font(60).render("ESCAPE FROM KLEMENSK", True, "#b68f40")
+        MENU_RECT = MENU_TEXT.get_rect(center=(640, 100))
+    
+        PLAY_BUTTON = Button(image=pygame.image.load("assets/Play Rect.png"), pos=(640, 250), 
+                            text_input="PLAY", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
+        OPTIONS_BUTTON = Button(image=pygame.image.load("assets/Options Rect.png"), pos=(640, 400), 
+                            text_input="OPTIONS", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
+        QUIT_BUTTON = Button(image=pygame.image.load("assets/Quit Rect.png"), pos=(640, 550), 
+                            text_input="QUIT", font=get_font(75), base_color="#d7fcd4", hovering_color="White")
+
+        SCREEN.blit(MENU_TEXT, MENU_RECT)
+
+        for button in [PLAY_BUTTON, OPTIONS_BUTTON, QUIT_BUTTON]:
+            button.changeColor(MENU_MOUSE_POS)
+            button.update(SCREEN)
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()  
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if PLAY_BUTTON.checkForInput(MENU_MOUSE_POS):
+                    
+                    # This play function is redundant - what we want is to be able
+                    # to bypass this entire function's runtime and jump to the core
+                    # logic of the game in the bottom-most `while True` expression.`
+                    start_game = True
+                if OPTIONS_BUTTON.checkForInput(MENU_MOUSE_POS):
+                    options()
+                if QUIT_BUTTON.checkForInput(MENU_MOUSE_POS):
+                    pygame.quit()
+                    sys.exit()
+
+        pygame.display.update()
+
+class Button():
+	def __init__(self, image, pos, text_input, font, base_color, hovering_color):
+		self.image = image
+		self.x_pos = pos[0]
+		self.y_pos = pos[1]
+		self.font = font
+		self.base_color, self.hovering_color = base_color, hovering_color
+		self.text_input = text_input
+		self.text = self.font.render(self.text_input, True, self.base_color)
+		if self.image is None:
+			self.image = self.text
+		self.rect = self.image.get_rect(center=(self.x_pos, self.y_pos))
+		self.text_rect = self.text.get_rect(center=(self.x_pos, self.y_pos))
+
+	def update(self, screen):
+		if self.image is not None:
+			screen.blit(self.image, self.rect)
+		screen.blit(self.text, self.text_rect)
+
+	def checkForInput(self, position):
+		if position[0] in range(self.rect.left, self.rect.right) and position[1] in range(self.rect.top, self.rect.bottom):
+			return True
+		return False
+
+	def changeColor(self, position):
+		if position[0] in range(self.rect.left, self.rect.right) and position[1] in range(self.rect.top, self.rect.bottom):
+			self.text = self.font.render(self.text_input, True, self.hovering_color)
+		else:
+			self.text = self.font.render(self.text_input, True, self.base_color)
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
@@ -30,6 +146,7 @@ class Player(pygame.sprite.Sprite):
         self.maximum_health = 1000
         self.health_bar_length = 400
         self.health_ratio = self.maximum_health / self.health_bar_length
+        self.angle = 0
 
     def player_rotation(self):
         self.mouse_coordinate = pygame.mouse.get_pos()
@@ -113,8 +230,8 @@ class Player(pygame.sprite.Sprite):
             self.current_health = self.maximum_health
 
     def basic_health(self):
-        pygame.draw.rect(screen, (255,0,0),(10,10,self.current_health/self.health_ratio,25))
-        pygame.draw.rect(screen, (255,255,255),(10,10,self.health_bar_length,25),4)
+        pygame.draw.rect(SCREEN, (255,0,0),(10,10,self.current_health/self.health_ratio,25))
+        pygame.draw.rect(SCREEN, (255,255,255),(10,10,self.health_bar_length,25),4)
 
 
 class Bullet(pygame.sprite.Sprite): 
@@ -200,8 +317,8 @@ class Enemy(pygame.sprite.Sprite):
         bar_x = self.rect.centerx - BAR_LENGTH // 2
         outline_rect = pygame.Rect(bar_x, self.rect.y - 10, BAR_LENGTH, BAR_HEIGHT)
         fill_rect = pygame.Rect(bar_x, self.rect.y - 10, fill, BAR_HEIGHT)
-        pygame.draw.rect(screen, RED , outline_rect, 2)
-        pygame.draw.rect(screen, GREEN , fill_rect)
+        pygame.draw.rect(SCREEN, RED , outline_rect, 2)
+        pygame.draw.rect(SCREEN, GREEN , fill_rect)
     
     def update(self):
         self.hunt_player()
@@ -210,10 +327,6 @@ class Enemy(pygame.sprite.Sprite):
         if self.health <=0:
             self.kill()
     
-
-
-
-
 
 all_sprites_group = pygame.sprite.Group()
 bullet_group = pygame.sprite.Group()
@@ -225,22 +338,26 @@ zombie = Enemy((800, 100))
 
 all_sprites_group.add(player, zombie)
 
-while True:
-    keys = pygame.key.get_pressed()
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            exit()
+run = True
+while run:
+    # Start with main menu, and if PLAY is selected, break out of main menu.
+    if start_game == False: 
+         main_menu()
+    else: 
+        keys = pygame.key.get_pressed()
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
 
     collisions = pygame.sprite.groupcollide(bullet_group, enemy_group, True, False)
     for bullet, enemies_hit in collisions.items():
         for enemy in enemies_hit:
             enemy.health -= 10
 
+    SCREEN.blit(background, (0,0))
 
-    screen.blit(background, (0,0))
-   
-    all_sprites_group.draw(screen)
+    all_sprites_group.draw(SCREEN)
     all_sprites_group.update()
 
     pygame.display.update()
