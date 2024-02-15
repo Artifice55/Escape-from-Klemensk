@@ -3,9 +3,12 @@
         "blit",
         "centerx",
         "centery",
+        "colliderect",
         "cooldown",
+        "groupcollide",
         "hitbox",
         "Klemensk",
+        "MOUSEBUTTONDOWN",
         "pygame",
         "rotozoom"
     ]
